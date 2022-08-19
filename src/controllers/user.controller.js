@@ -7,11 +7,9 @@ module.exports.getUsersWithPostCount = async (req, res) => {
         //TODO: Implement this API
         const filter = {};
         var final=[];
-        let data={
-            "users":final
-        }
+        
         let test = await Post.find()
-            .populate({ path: "userId", select: "name -_id" })
+            .populate({ path: "userId", select: "name" })
             .then(function (err, stor) {
                 if (err) return err;
             })
@@ -27,7 +25,7 @@ module.exports.getUsersWithPostCount = async (req, res) => {
                 }
             }
 
-            let id = _.get(test[doc], 'id')
+            let id = _.get(test[doc].userId, '_id')
             let name = _.get(test[doc], 'userId.name')
             let postCount = count
             let finalObject={
@@ -38,14 +36,16 @@ module.exports.getUsersWithPostCount = async (req, res) => {
             final.push(finalObject)
             count = 0;
         }
-        jsonObject = final.map(JSON.stringify);
+        // jsonObject = final.map(JSON.stringify);
       
-        console.log(jsonObject);
-  
-        uniqueSet = new Set(jsonObject);
-        final = Array.from(uniqueSet).map(JSON.parse);
+        // console.log(jsonObject);
+        // uniqueSet = new Set(jsonObject);
+        // final = Array.from(uniqueSet).map(JSON.parse);
 
-        final = await getUniqueListBy(final,"name")
+        final = await getUniqueListBy(final,"_id")
+        let data={
+            "users":final
+        }
         res.status(200).json({
            // message: 'Implement this API',
             data: data
